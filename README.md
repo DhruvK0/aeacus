@@ -56,7 +56,7 @@
 ## Features
 
 - Robust yet simple vulnerability scorer
-- Image deployment (cleanup, README, etc)
+- Image deployment (CleanUp, README, etc)
 - Remote score reporting
 
 > Note: `aeacus` ships with very weak crypto on purpose. You need to implement your own crypto functions. See the [Adding Crypto](/docs/crypto.md) for more information.

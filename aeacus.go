@@ -8,7 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/urfave/cli"
+	. "aeacus/cmd"
+
+	"github.com/urfave/cli/v2"
 )
 
 //////////////////////////////////////////////////////////////////
@@ -20,8 +22,8 @@ import (
 //////////////////////////////////////////////////////////////////
 
 func main() {
-	fillConstants()
-	runningPermsCheck()
+	FillConstants()
+	RunningPermsCheck()
 	app := &cli.App{
 		UseShortOptionHandling: true,
 		EnableBashCompletion:   true,
@@ -29,8 +31,8 @@ func main() {
 		Usage:                  "setup and score vulnerabilities in an image",
 		Action: func(c *cli.Context) error {
 			parseFlags(c)
-			checkConfig(scoringConf)
-			scoreImage()
+			CheckConfig(ScoringConf)
+			ScoreImage()
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -57,8 +59,8 @@ func main() {
 				Usage:   "Score image with current scoring config",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					checkConfig(scoringConf)
-					scoreImage()
+					CheckConfig(ScoringConf)
+					ScoreImage()
 					return nil
 				},
 			},
@@ -68,7 +70,7 @@ func main() {
 				Usage:   "Check that the scoring config is valid",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					checkConfig(scoringConf)
+					CheckConfig(ScoringConf)
 					return nil
 				},
 			},
@@ -78,7 +80,7 @@ func main() {
 				Usage:   "Encrypt scoring configuration",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					writeConfig(scoringConf, scoringData)
+					WriteConfig(ScoringConf, ScoringData)
 					return nil
 				},
 			},
@@ -88,11 +90,11 @@ func main() {
 				Usage:   "Check that scoring data file is valid",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					err := readScoringData()
+					err := ReadScoringData()
 					if err != nil {
-						failPrint("Error reading in scoring data!")
-					} else if verboseEnabled {
-						infoPrint("Reading in scoring data successful!")
+						FailPrint("Error reading in scoring data!")
+					} else if VerboseEnabled {
+						InfoPrint("Reading in scoring data successful!")
 					}
 					return nil
 				},
@@ -107,8 +109,8 @@ func main() {
 					if err != nil {
 						return errors.New("Invalid or missing number passed to forensics")
 					}
-					checkConfig(scoringConf)
-					createFQs(numFqs)
+					CheckConfig(ScoringConf)
+					CreateFQs(numFqs)
 					return nil
 				},
 			},
@@ -117,7 +119,7 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Launch configuration GUI",
 				Action: func(c *cli.Context) error {
-					launchConfigGui()
+					LaunchConfigGui()
 					return nil
 				},
 			},
@@ -126,7 +128,7 @@ func main() {
 				Aliases: []string{"p"},
 				Usage:   "Launch TeamID GUI prompt",
 				Action: func(c *cli.Context) error {
-					launchIDPrompt()
+					LaunchIDPrompt()
 					return nil
 				},
 			},
@@ -135,7 +137,7 @@ func main() {
 				Aliases: []string{"i"},
 				Usage:   "Get info about the system",
 				Action: func(c *cli.Context) error {
-					getInfo(c.Args().Get(0))
+					GetInfo(c.Args().Get(0))
 					return nil
 				},
 			},
@@ -144,8 +146,8 @@ func main() {
 				Aliases: []string{"v"},
 				Usage:   "Print the current version of aeacus",
 				Action: func(c *cli.Context) error {
-					infoPrint("=== aeacus ===")
-					infoPrint("version " + aeacusVersion)
+					InfoPrint("=== aeacus ===")
+					InfoPrint("version " + AeacusVersion)
 					return nil
 				},
 			},
@@ -155,8 +157,8 @@ func main() {
 				Usage:   "Prepare the image for release",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					if !yesEnabled {
-						confirmPrint("Are you sure you want to begin the image release process?")
+					if !YesEnabled {
+						ConfirmPrint("Are you sure you want to begin the image release process?")
 					}
 					releaseImage()
 					return nil
@@ -168,10 +170,10 @@ func main() {
 				Usage:   "Automatically mitigate the configured vulnerabilities",
 				Action: func(c *cli.Context) error {
 					parseFlags(c)
-					if !yesEnabled {
-						confirmPrint("Are you sure you want to try to automatically mitigate the configured vulns?")
+					if !YesEnabled {
+						ConfirmPrint("Are you sure you want to try to automatically mitigate the configured vulns?")
 					}
-					mitigateVulns()
+					MitigateVulns()
 					return nil
 				},
 			},
@@ -185,16 +187,16 @@ func main() {
 }
 
 // parseFlags sets the global variable values, for example,
-// verboseEnabled.
+// VerboseEnabled.
 func parseFlags(c *cli.Context) {
 	if c.Bool("v") {
-		verboseEnabled = true
+		VerboseEnabled = true
 	}
 	if c.Bool("d") {
-		debugEnabled = true
+		DebugEnabled = true
 	}
 	if c.Bool("y") {
-		yesEnabled = true
+		YesEnabled = true
 	}
 }
 
@@ -202,11 +204,11 @@ func parseFlags(c *cli.Context) {
 // writing the ReadMe/Desktop Files, installing the system service,
 // and cleaning the image for release.
 func releaseImage() {
-	checkConfig(scoringConf)
-	writeConfig(scoringConf, scoringData)
-	genReadMe()
-	writeDesktopFiles()
-	configureAutologin()
-	installService()
-	cleanUp()
+	CheckConfig(ScoringConf)
+	WriteConfig(ScoringConf, ScoringData)
+	GenReadMe()
+	WriteDesktopFiles()
+	ConfigureAutologin()
+	InstallService()
+	CleanUp()
 }

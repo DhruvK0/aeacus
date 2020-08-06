@@ -2,7 +2,7 @@
 
 # Grab dependencies
 echo "[+] Getting general dependencies..."
-go get "github.com/urfave/cli"
+go get "github.com/urfave/cli/v2"
 go get "github.com/BurntSushi/toml/cmd/tomlv"
 go get "github.com/fatih/color"
 

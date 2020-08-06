@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/hex"
@@ -15,11 +15,11 @@ import (
 // into the mc.Config struct based on the TOML spec.
 func parseConfig(configContent string) {
 	if configContent == "" {
-		failPrint("Configuration is empty!")
+		FailPrint("Configuration is empty!")
 	}
 
 	if _, err := toml.Decode(configContent, &mc.Config); err != nil {
-		failPrint("Error decoding TOML: " + err.Error())
+		FailPrint("Error decoding TOML: " + err.Error())
 		os.Exit(1)
 	}
 
@@ -29,24 +29,24 @@ func parseConfig(configContent string) {
 	}
 }
 
-// writeConfig reads the plaintext configuration from sourceFile, and writes
+// WriteConfig reads the plaintext configuration from sourceFile, and writes
 // the encrypted configuration into the destFile name passed.
-func writeConfig(sourceFile, destFile string) {
-	if verboseEnabled {
-		infoPrint("Reading configuration from " + mc.DirPath + sourceFile + "...")
+func WriteConfig(sourceFile, destFile string) {
+	if VerboseEnabled {
+		InfoPrint("Reading configuration from " + mc.DirPath + sourceFile + "...")
 	}
 
 	configFile, err := readFile(mc.DirPath + sourceFile)
 	if err != nil {
-		failPrint("Can't open scoring configuration file (" + sourceFile + "): " + err.Error())
+		FailPrint("Can't open scoring configuration file (" + sourceFile + "): " + err.Error())
 		os.Exit(1)
 	}
 	encryptedConfig, err := encryptConfig(configFile)
 	if err != nil {
-		failPrint("Encrypting config failed: " + err.Error())
+		FailPrint("Encrypting config failed: " + err.Error())
 		os.Exit(1)
-	} else if verboseEnabled {
-		infoPrint("Writing data to " + mc.DirPath + "...")
+	} else if VerboseEnabled {
+		InfoPrint("Writing data to " + mc.DirPath + "...")
 	}
 	writeFile(mc.DirPath+destFile, encryptedConfig)
 }
@@ -54,11 +54,11 @@ func writeConfig(sourceFile, destFile string) {
 // readData is a wrapper around decryptData, taking the scoring data fileName,
 // and reading its content. It returns the decrypt config.
 func readData(fileName string) (string, error) {
-	if verboseEnabled {
-		infoPrint("Decrypting data from " + mc.DirPath + fileName + "...")
+	if VerboseEnabled {
+		InfoPrint("Decrypting data from " + mc.DirPath + fileName + "...")
 	}
 	// Read in the encrypted configuration file.
-	dataFile, err := readFile(mc.DirPath + scoringData)
+	dataFile, err := readFile(mc.DirPath + ScoringData)
 	if err != nil {
 		return "", err
 	} else if dataFile == "" {
@@ -74,7 +74,7 @@ func readData(fileName string) (string, error) {
 // printConfig offers a printed representation of the config, as parsed
 // by readData and parseConfig.
 func printConfig() {
-	passPrint("Configuration " + mc.DirPath + scoringConf + " check passed!")
+	PassPrint("Configuration " + mc.DirPath + ScoringConf + " check passed!")
 	fmt.Println("Title:", mc.Config.Title)
 	fmt.Println("Name:", mc.Config.Name)
 	fmt.Println("OS:", mc.Config.OS)
@@ -108,9 +108,9 @@ func printConfig() {
 	}
 }
 
-// confirmPrint will prompt the user with the given toPrint string, and
+// ConfirmPrint will prompt the user with the given toPrint string, and
 // exit the program if N or n is input.
-func confirmPrint(toPrint string) {
+func ConfirmPrint(toPrint string) {
 	printer(color.FgYellow, "CONF", "")
 	fmt.Print(toPrint + " [Y/n]: ")
 	var resp string
@@ -120,19 +120,19 @@ func confirmPrint(toPrint string) {
 	}
 }
 
-func passPrint(toPrint string) {
+func PassPrint(toPrint string) {
 	printer(color.FgGreen, "PASS", toPrint)
 }
 
-func failPrint(toPrint string) {
+func FailPrint(toPrint string) {
 	printer(color.FgRed, "FAIL", toPrint)
 }
 
-func warnPrint(toPrint string) {
+func WarnPrint(toPrint string) {
 	printer(color.FgYellow, "WARN", toPrint)
 }
 
-func infoPrint(toPrint string) {
+func InfoPrint(toPrint string) {
 	printer(color.FgBlue, "INFO", toPrint)
 }
 

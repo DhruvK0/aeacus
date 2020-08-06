@@ -1,6 +1,6 @@
-package main
+package cmd
 
-func launchIDPrompt() {
+func LaunchIDPrompt() {
 	powerShellPrompt := `
         Add-Type -AssemblyName System.Windows.Forms
         [System.Windows.Forms.Application]::EnableVisualStyles()
@@ -46,6 +46,6 @@ func launchIDPrompt() {
 	shellCommand(powerShellPrompt)
 }
 
-func launchConfigGui() {
-	warnPrint("This feature is not supported yet on Windows.")
+func LaunchConfigGui() {
+	WarnPrint("This feature is not supported yet on Windows.")
 }

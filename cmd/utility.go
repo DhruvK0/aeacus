@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"io/ioutil"
@@ -6,26 +6,26 @@ import (
 )
 
 const (
-	aeacusVersion = "1.4.0"
-	scoringConf   = "scoring.conf"
-	scoringData   = "scoring.dat"
+	AeacusVersion = "1.5.0"
+	ScoringConf   = "scoring.conf"
+	ScoringData   = "scoring.dat"
 	linuxDir      = "/opt/aeacus/"
 	windowsDir    = "C:\\aeacus\\"
 )
 
 var (
-	verboseEnabled = false
-	debugEnabled   = false
-	yesEnabled     = false
+	VerboseEnabled = false
+	DebugEnabled   = false
+	YesEnabled     = false
 	mc             = &metaConfig{}
 )
 
 // writeFile wraps ioutil's WriteFile function, and prints
 // the error the screen if one occurs.
 func writeFile(fileName string, fileContent string) {
-	err := ioutil.WriteFile(fileName, []byte(fileContent), 0644)
+	err := ioutil.WriteFile(fileName, []byte(fileContent), 0o644)
 	if err != nil {
-		failPrint("Error writing file: " + err.Error())
+		FailPrint("Error writing file: " + err.Error())
 	}
 }
 

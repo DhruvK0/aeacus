@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bytes"
@@ -70,7 +70,7 @@ func decodeString(fileContent string) (string, error) {
 func checkTrace() {
 	result, _, _ := debuggerCheck.Call()
 	if int(result) != 0 {
-		failPrint("Reversing is cool, but we would appreciate if you practiced your skills in an environment that was less destructive to other peoples' experiences.")
+		FailPrint("Reversing is cool, but we would appreciate if you practiced your skills in an environment that was less destructive to other peoples' experiences.")
 		os.Exit(1)
 	}
 }
@@ -80,7 +80,7 @@ func checkTrace() {
 func sendNotification(messageString string) {
 	err := beeep.Notify("Aeacus SE", messageString, mc.DirPath+"assets/logo.png")
 	if err != nil {
-		failPrint("Notification error: " + err.Error())
+		FailPrint("Notification error: " + err.Error())
 	}
 }
 
@@ -90,9 +90,9 @@ func sendNotification(messageString string) {
 // speed things up, as well as some other flags) to run commands on the host
 // system and retrieve the return value.
 func rawCmd(commandGiven string) *exec.Cmd {
-	if debugEnabled {
+	if DebugEnabled {
 		cmdInput := "powershell.exe -NonInteractive -NoProfile Invoke-Command -ScriptBlock { " + commandGiven + " }"
-		infoPrint("rawCmd input: " + cmdInput)
+		InfoPrint("rawCmd input: " + cmdInput)
 	}
 	return exec.Command("powershell.exe", "-NonInteractive", "-NoProfile", "Invoke-Command", "-ScriptBlock", "{ "+commandGiven+" }")
 }
@@ -104,9 +104,9 @@ func shellCommand(commandGiven string) {
 	if err := cmd.Run(); err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
 			if len(commandGiven) > 12 {
-				failPrint("Command \"" + commandGiven[:12] + "...\" errored out (code " + err.Error() + ").")
+				FailPrint("Command \"" + commandGiven[:12] + "...\" errored out (code " + err.Error() + ").")
 			} else {
-				failPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
+				FailPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
 			}
 		}
 	}
@@ -118,9 +118,9 @@ func shellCommandOutput(commandGiven string) (string, error) {
 	out, err := rawCmd(commandGiven).Output()
 	if err != nil {
 		if len(commandGiven) > 9 {
-			failPrint("Command \"" + commandGiven[:9] + "...\" errored out (code " + err.Error() + ").")
+			FailPrint("Command \"" + commandGiven[:9] + "...\" errored out (code " + err.Error() + ").")
 		} else {
-			failPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
+			FailPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
 		}
 		return "", err
 	}
@@ -132,15 +132,15 @@ func playAudio(wavPath string) {
 	shellCommand(commandText)
 }
 
-// createFQs is a quality of life function that creates Forensic Question files
+// CreateFQs is a quality of life function that creates Forensic Question files
 // on the Desktop, pre-populated with a template.
-func createFQs(numFqs int) {
+func CreateFQs(numFqs int) {
 	for i := 1; i <= numFqs; i++ {
 		fileName := "'Forensic Question " + strconv.Itoa(i) + ".txt'"
 		shellCommand("echo 'QUESTION:' > C:\\Users\\" + mc.Config.User + "\\Desktop\\" + fileName)
 		shellCommand("echo 'ANSWER:' >> C:\\Users\\" + mc.Config.User + "\\Desktop\\" + fileName)
-		if verboseEnabled {
-			infoPrint("Wrote " + fileName + " to Desktop")
+		if VerboseEnabled {
+			InfoPrint("Wrote " + fileName + " to Desktop")
 		}
 	}
 }
@@ -155,9 +155,9 @@ func adminCheck() bool {
 }
 
 func destroyImage() {
-	failPrint("Destroying the image!")
-	if verboseEnabled {
-		warnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")
+	FailPrint("Destroying the image!")
+	if VerboseEnabled {
+		WarnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")
 	} else {
 		shellCommand("del /s /q C:\\aeacus")
 		if !mc.Config.NoDestroy {
@@ -204,7 +204,7 @@ func getPackages() ([]string, error) {
 	softwareList := []string{}
 	sw, err := wapi.InstalledSoftwareList()
 	if err != nil {
-		failPrint("Couldn't get packages: " + err.Error())
+		FailPrint("Couldn't get packages: " + err.Error())
 		return softwareList, err
 	}
 	for _, s := range sw {
@@ -216,7 +216,7 @@ func getPackages() ([]string, error) {
 func getLocalUsers() ([]shared.LocalUser, error) {
 	ul, err := wapi.ListLocalUsers()
 	if err != nil {
-		failPrint("Couldn't get local users: " + err.Error())
+		FailPrint("Couldn't get local users: " + err.Error())
 	}
 	return ul, err
 }

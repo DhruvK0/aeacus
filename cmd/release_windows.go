@@ -1,24 +1,24 @@
-package main
+package cmd
 
-func writeDesktopFiles() {
+func WriteDesktopFiles() {
 	firefoxBinary := `C:\Program Files (x86)\Mozilla Firefox\firefox.exe`
-	if verboseEnabled {
-		infoPrint("Writing ScoringReport.html shortcut to Desktop...")
+	if VerboseEnabled {
+		InfoPrint("Writing ScoringReport.html shortcut to Desktop...")
 	}
 	cmdString := `$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut("C:\Users\` + mc.Config.User + `\Desktop\ScoringReport.lnk"); $Shortcut.TargetPath = "` + firefoxBinary + `"; $Shortcut.Arguments = "C:\aeacus\assets\ScoringReport.html"; $Shortcut.Save()`
 	shellCommand(cmdString)
-	if verboseEnabled {
-		infoPrint("Writing ReadMe.html shortcut to Desktop...")
+	if VerboseEnabled {
+		InfoPrint("Writing ReadMe.html shortcut to Desktop...")
 	}
 	cmdString = `$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut("C:\Users\` + mc.Config.User + `\Desktop\ReadMe.lnk"); $Shortcut.TargetPath = "` + firefoxBinary + `"; $Shortcut.Arguments = "C:\aeacus\assets\ReadMe.html"; $Shortcut.Save()`
 	shellCommand(cmdString)
-	if verboseEnabled {
-		infoPrint("Creating or emptying TeamID.txt file...")
+	if VerboseEnabled {
+		InfoPrint("Creating or emptying TeamID.txt file...")
 	}
 	cmdString = "echo 'YOUR-TEAMID-HERE' > C:\\aeacus\\TeamID.txt"
 	shellCommand(cmdString)
-	if verboseEnabled {
-		infoPrint("Writing TeamID shortcut to Desktop...")
+	if VerboseEnabled {
+		InfoPrint("Writing TeamID shortcut to Desktop...")
 	}
 	powershellPermission := `
 	$ACL = Get-ACL C:\aeacus\TeamID.txt
@@ -26,8 +26,8 @@ func writeDesktopFiles() {
 	Set-Acl -Path C:\aeacus\TeamID.txt -AclObject $ACL
 	`
 	shellCommand(powershellPermission)
-	if verboseEnabled {
-		infoPrint("Changing Permissions of TeamID")
+	if VerboseEnabled {
+		InfoPrint("Changing Permissions of TeamID")
 	}
 
 	cmdString = `$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut("C:\Users\` + mc.Config.User + `\Desktop\TeamID.lnk"); $Shortcut.TargetPath = "C:\aeacus\phocus.exe"; $Shortcut.Arguments = "-i yes"; $Shortcut.Save()`
@@ -36,9 +36,9 @@ func writeDesktopFiles() {
 	// domain compatibility? doubt
 }
 
-func configureAutologin() {
-	if verboseEnabled {
-		infoPrint("Setting Up autologin for " + mc.Config.User + "...")
+func ConfigureAutologin() {
+	if VerboseEnabled {
+		InfoPrint("Setting Up autologin for " + mc.Config.User + "...")
 	}
 	powershellAutoLogin := `
 	function Test-RegistryValue {
@@ -84,38 +84,38 @@ func configureAutologin() {
 	shellCommand(powershellAutoLogin)
 }
 
-func installService() {
-	if verboseEnabled {
-		infoPrint("Installing service with sc.exe...")
+func InstallService() {
+	if VerboseEnabled {
+		InfoPrint("Installing service with sc.exe...")
 	}
 	cmdString := `sc.exe create CSSClient binPath= "C:\aeacus\phocus.exe" start= "auto" DisplayName= "CSSClient"`
 	shellCommand(cmdString)
-	if verboseEnabled {
-		infoPrint("Setting service description...")
+	if VerboseEnabled {
+		InfoPrint("Setting service description...")
 	}
 	cmdString = `sc.exe description CSSClient "This is Aeacus's Competition Scoring System client. Don't stop or mess with this unless you want to not get points, and maybe have your registry deleted."`
 	shellCommand(cmdString)
 }
 
-func cleanUp() {
-	if verboseEnabled {
-		infoPrint("Removing scoring.conf and ReadMe.conf...")
+func CleanUp() {
+	if VerboseEnabled {
+		InfoPrint("Removing scoring.conf and ReadMe.conf...")
 	}
 	shellCommand("Remove-Item -Force C:\\aeacus\\scoring.conf")
 	shellCommand("Remove-Item -Force C:\\aeacus\\ReadMe.conf")
-	if verboseEnabled {
-		infoPrint("Removing previous.txt...")
+	if VerboseEnabled {
+		InfoPrint("Removing previous.txt...")
 	}
 	shellCommand("Remove-Item -Force C:\\aeacus\\previous.txt")
-	if verboseEnabled {
-		infoPrint("Emptying recycle bin...")
+	if VerboseEnabled {
+		InfoPrint("Emptying recycle bin...")
 	}
 	shellCommand("Clear-RecycleBin -Force")
-	if verboseEnabled {
-		infoPrint("Clearing recently used...")
+	if VerboseEnabled {
+		InfoPrint("Clearing recently used...")
 	}
 	shellCommand("Remove-Item -Force '${env:USERPROFILE}\\AppData\\Roaming\\Microsoft\\Windows\\Recent‌​*.lnk'")
-	if verboseEnabled {
-		warnPrint("Done with automatic cleanup! You need to remove aeacus.exe manually. The only things you need in the C:\\aeacus directory is phocus, scoring.dat, TeamID.txt, and the assets directory.")
+	if VerboseEnabled {
+		WarnPrint("Done with automatic CleanUp! You need to remove aeacus.exe manually. The only things you need in the C:\\aeacus directory is phocus, scoring.dat, TeamID.txt, and the assets directory.")
 	}
 }

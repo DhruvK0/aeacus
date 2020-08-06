@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"crypto/aes"
@@ -22,13 +22,13 @@ func readTeamID() {
 	fileContent, err := readFile(mc.DirPath + "TeamID.txt")
 	fileContent = strings.TrimSpace(fileContent)
 	if err != nil {
-		failPrint("TeamID.txt does not exist!")
+		FailPrint("TeamID.txt does not exist!")
 		sendNotification("TeamID.txt does not exist!")
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Your TeamID files does not exist! Failed to upload scores."
 		mc.Connection = false
 	} else if fileContent == "" {
-		failPrint("TeamID.txt is empty!")
+		FailPrint("TeamID.txt is empty!")
 		sendNotification("TeamID.txt is empty!")
 		mc.Conn.OverallStatus = "red"
 		mc.Conn.OverallStatus = "Your TeamID is empty! Failed to upload scores."
@@ -66,8 +66,8 @@ func genUpdate() string {
 	writeString(&update, "challenge", genChallenge())
 	writeString(&update, "vulns", genVulns())
 	writeString(&update, "time", strconv.Itoa(int(time.Now().Unix())))
-	if verboseEnabled {
-		infoPrint("Encrypting score update...")
+	if VerboseEnabled {
+		InfoPrint("Encrypting score update...")
 	}
 	return hexEncode(encryptString(mc.Config.Password, update.String()))
 }
@@ -91,8 +91,8 @@ func genVulns() string {
 		vulnString.WriteString(delimiter)
 	}
 
-	if verboseEnabled {
-		infoPrint("Encrypting vulnerabilities...")
+	if VerboseEnabled {
+		InfoPrint("Encrypting vulnerabilities...")
 	}
 
 	return hexEncode(encryptString(mc.Config.Password, vulnString.String()))
@@ -102,7 +102,7 @@ func reportScore() error {
 	resp, err := http.PostForm(mc.Config.Remote+"/update",
 		url.Values{"update": {genUpdate()}})
 	if err != nil {
-		failPrint(err.Error())
+		FailPrint(err.Error())
 		return err
 	}
 
@@ -110,7 +110,7 @@ func reportScore() error {
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Failed to upload score! Please ensure that your Team ID is correct."
 		mc.Connection = false
-		failPrint("Failed to upload score! Is your TeamID wrong?")
+		FailPrint("Failed to upload score! Is your TeamID wrong?")
 		sendNotification("Failed to upload score! Is your Team ID correct?")
 		return errors.New("Non-200 response from remote scoring endpoint")
 	}
@@ -119,8 +119,8 @@ func reportScore() error {
 
 func checkServer() {
 	// Internet check (requisite)
-	if verboseEnabled {
-		infoPrint("Checking for internet connection...")
+	if VerboseEnabled {
+		InfoPrint("Checking for internet connection...")
 	}
 
 	client := http.Client{
@@ -137,8 +137,8 @@ func checkServer() {
 	}
 
 	// Scoring engine check
-	if verboseEnabled {
-		infoPrint("Checking for scoring engine connection...")
+	if VerboseEnabled {
+		InfoPrint("Checking for scoring engine connection...")
 	}
 	resp, err := client.Get(mc.Config.Remote + "/status")
 
@@ -169,13 +169,13 @@ func checkServer() {
 	} else if mc.Conn.ServerStatus == "FAIL" {
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Failure! Can't access remote scoring server."
-		failPrint("Can't access remote scoring server!")
+		FailPrint("Can't access remote scoring server!")
 		sendNotification("Score upload failure! Unable to access remote server.")
 		mc.Connection = false
 	} else if mc.Conn.ServerStatus == "ERROR" {
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Score upload failure. Can't send scores to remote server."
-		failPrint("Remote server returned an error for its status!")
+		FailPrint("Remote server returned an error for its status!")
 		sendNotification("Score upload failure! Remote server returned an error.")
 		mc.Connection = false
 	} else {
@@ -247,21 +247,21 @@ func decryptString(password, ciphertext string) string {
 	// Create the AES block object.
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		failPrint(err.Error())
+		FailPrint(err.Error())
 		return ""
 	}
 
 	// Create the AES-GCM cipher with the generated block.
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		failPrint(err.Error())
+		FailPrint(err.Error())
 		return ""
 	}
 
 	// Decrypt (and check validity, since it's GCM) of ciphertext.
 	plainText, err := aesgcm.Open(nil, iv, []byte(ciphertext), nil)
 	if err != nil {
-		failPrint(err.Error())
+		FailPrint(err.Error())
 		return ""
 	}
 

@@ -43,7 +43,7 @@ func main() {
 // the production binary outside of the Windows service.
 func (p *program) Init(env svc.Environment) error {
 	if !env.IsWindowsService() && !*idgui {
-		failPrint("Sorry! Don't run this binary yourself. It's probably already running as a Windows service (CSSClient).")
+		FailPrint("Sorry! Don't run this binary yourself. It's probably already running as a Windows service (CSSClient).")
 		time.Sleep(5 * time.Second)
 		os.Exit(1)
 	}
@@ -54,7 +54,7 @@ func (p *program) Start() error {
 	p.quit = make(chan struct{})
 	p.wg.Add(1)
 	if *idgui {
-		go launchIDPromptWrapper(p.quit)
+		go LaunchIDPromptWrapper(p.quit)
 	} else {
 		go phocusStart(p.quit)
 	}
@@ -74,7 +74,7 @@ func (p *program) Stop() error {
 	return nil
 }
 
-func launchIDPromptWrapper(quit chan struct{}) {
-	launchIDPrompt()
+func LaunchIDPromptWrapper(quit chan struct{}) {
+	LaunchIDPrompt()
 	os.Exit(0) // This is temporary solution
 }

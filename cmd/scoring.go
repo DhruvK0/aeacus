@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func scoreImage() {
+func ScoreImage() {
 	// Ensure checks aren't blank, and grab TeamID.
 	checkConfigData()
 
@@ -35,8 +35,8 @@ func scoreImage() {
 	} else {
 		checkServer()
 		if !mc.Connection {
-			if verboseEnabled {
-				warnPrint("Connection failed-- generating blank report.")
+			if VerboseEnabled {
+				WarnPrint("Connection failed-- generating blank report.")
 			}
 			genReport(mc.Image)
 			return
@@ -45,8 +45,8 @@ func scoreImage() {
 		err := reportScore()
 		if err != nil {
 			mc.Image = imageData{}
-			if verboseEnabled {
-				warnPrint("Local is disabled, scoring data removed.")
+			if VerboseEnabled {
+				WarnPrint("Local is disabled, scoring data removed.")
 			}
 		}
 		genReport(mc.Image)
@@ -64,7 +64,7 @@ func scoreImage() {
 			playAudio(mc.DirPath + "assets/alarm.wav")
 		}
 	} else {
-		warnPrint("Reading from previous.txt failed. This is probably fine.")
+		WarnPrint("Reading from previous.txt failed. This is probably fine.")
 	}
 
 	writeFile(mc.DirPath+"previous.txt", strconv.Itoa(mc.Image.Score))
@@ -96,12 +96,12 @@ func scoreChecks() {
 	}
 
 	wg.Wait()
-	if verboseEnabled {
-		infoPrint("Finished running all checks.")
+	if VerboseEnabled {
+		InfoPrint("Finished running all checks.")
 	}
 
-	if verboseEnabled {
-		infoPrint(fmt.Sprintf("Score: %d", mc.Image.Score))
+	if VerboseEnabled {
+		InfoPrint(fmt.Sprintf("Score: %d", mc.Image.Score))
 	}
 }
 
@@ -111,12 +111,12 @@ func scoreCheck(wg *sync.WaitGroup, check check) {
 	defer wg.Done()
 	status := true
 	passStatus := []bool{}
-	for _, condition := range check.Pass {
+	for i, condition := range check.Pass {
 		passItemStatus := processCheckWrapper(&check, condition.Type, condition.Arg1, condition.Arg2, condition.Arg3)
-		if debugEnabled {
-			infoPrint(fmt.Sprint("Result of last pass check was ", status))
-		}
 		passStatus = append(passStatus, passItemStatus)
+		if DebugEnabled {
+			InfoPrint(fmt.Sprint("Result of last pass check was ", passStatus[i]))
+		}
 	}
 
 	// For multiple pass conditions, will only be true if ALL of them are
@@ -126,15 +126,15 @@ func scoreCheck(wg *sync.WaitGroup, check check) {
 			break
 		}
 	}
-	if debugEnabled {
-		infoPrint(fmt.Sprint("Result of all pass check was ", status))
+	if DebugEnabled {
+		InfoPrint(fmt.Sprint("Result of all pass check was ", status))
 	}
 
 	// If a PassOverride succeeds, that overrides the Pass checks
 	for _, condition := range check.PassOverride {
 		passOverrideStatus := processCheckWrapper(&check, condition.Type, condition.Arg1, condition.Arg2, condition.Arg3)
-		if debugEnabled {
-			infoPrint(fmt.Sprint("Result of pass override was ", passOverrideStatus))
+		if DebugEnabled {
+			InfoPrint(fmt.Sprint("Result of pass override was ", passOverrideStatus))
 		}
 		if passOverrideStatus {
 			status = true
@@ -143,8 +143,8 @@ func scoreCheck(wg *sync.WaitGroup, check check) {
 	}
 	for _, condition := range check.Fail {
 		failStatus := processCheckWrapper(&check, condition.Type, condition.Arg1, condition.Arg2, condition.Arg3)
-		if debugEnabled {
-			infoPrint(fmt.Sprint("Result of fail check was ", failStatus))
+		if DebugEnabled {
+			InfoPrint(fmt.Sprint("Result of fail check was ", failStatus))
 		}
 		if failStatus {
 			status = false
@@ -153,8 +153,8 @@ func scoreCheck(wg *sync.WaitGroup, check check) {
 	}
 	if check.Points >= 0 {
 		if status {
-			if verboseEnabled {
-				passPrint(fmt.Sprintf("Check passed: %s - %d pts", check.Message, check.Points))
+			if VerboseEnabled {
+				PassPrint(fmt.Sprintf("Check passed: %s - %d pts", check.Message, check.Points))
 			}
 			mc.Image.Points = append(mc.Image.Points, scoreItem{check.Message, check.Points})
 			mc.Image.Score += check.Points
@@ -162,8 +162,8 @@ func scoreCheck(wg *sync.WaitGroup, check check) {
 		}
 	} else {
 		if status {
-			if verboseEnabled {
-				failPrint(fmt.Sprintf("Penalty triggered: %s - %d pts", check.Message, check.Points))
+			if VerboseEnabled {
+				FailPrint(fmt.Sprintf("Penalty triggered: %s - %d pts", check.Message, check.Points))
 			}
 			mc.Image.Penalties = append(mc.Image.Penalties, scoreItem{check.Message, check.Points})
 			mc.Image.Score += check.Points

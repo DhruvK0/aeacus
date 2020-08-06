@@ -2,7 +2,7 @@
 // If a checkType does not match one specified, it is handed off to
 // processCheck for the OS-specific checks.
 
-package main
+package cmd
 
 import (
 	"crypto/sha1"
@@ -17,8 +17,8 @@ import (
 // processCheckWrapper takes the data from a check in the config
 // and runs the correct function with the correct parameters
 func processCheckWrapper(check *check, checkType string, arg1 string, arg2 string, arg3 string) bool {
-	if debugEnabled {
-		infoPrint("Handling check: " + checkType)
+	if DebugEnabled {
+		InfoPrint("Handling check: " + checkType)
 	}
 	switch checkType {
 	case "Command":
@@ -195,7 +195,7 @@ func fileContainsRegex(fileName string, expressionString string) (bool, error) {
 	}
 	matched, err := regexp.Match(expressionString, []byte(fileContent))
 	if err != nil {
-		failPrint("There's an error with your regular expression for fileContainsRegex: " + err.Error())
+		FailPrint("There's an error with your regular expression for fileContainsRegex: " + err.Error())
 	}
 	return matched, err
 }
@@ -212,7 +212,7 @@ func dirContainsRegex(dirName string, expressionString string) (bool, error) {
 			files = append(files, path)
 		}
 		if len(files) > 10000 {
-			failPrint("Recursive indexing has exceeded limit, erroring out.")
+			FailPrint("Recursive indexing has exceeded limit, erroring out.")
 			return errors.New("Indexed too many files in recursive search")
 		}
 		return nil

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -60,13 +60,13 @@ func genReport(img imageData) {
 
 	htmlFile.WriteString(footer)
 
-	if verboseEnabled {
-		infoPrint("Writing HTML to ScoringReport.html...")
+	if VerboseEnabled {
+		InfoPrint("Writing HTML to ScoringReport.html...")
 	}
 	writeFile(mc.DirPath+"assets/ScoringReport.html", htmlFile.String())
 }
 
-func genReadMe() {
+func GenReadMe() {
 	header := `
 <!DOCTYPE html>
 <html>
@@ -161,13 +161,13 @@ func genReadMe() {
 	htmlFile.WriteString("</p>")
 	userReadMe, err := readFile("ReadMe.conf")
 	if err != nil {
-		failPrint("No ReadMe.conf file found!")
+		FailPrint("No ReadMe.conf file found!")
 		os.Exit(1)
 	}
 	htmlFile.WriteString(userReadMe)
 	htmlFile.WriteString(footer)
-	if verboseEnabled {
-		infoPrint("Writing HTML to ReadMe.html...")
+	if VerboseEnabled {
+		InfoPrint("Writing HTML to ReadMe.html...")
 	}
 	writeFile(mc.DirPath+"assets/ReadMe.html", htmlFile.String())
 }

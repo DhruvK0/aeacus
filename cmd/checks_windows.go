@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/binary"
@@ -151,7 +151,7 @@ func processCheck(check *check, checkType string, arg1 string, arg2 string, arg3
 		result, err := fileOwner(arg1, arg2)
 		return err == nil && !result
 	default:
-		failPrint("No check type " + checkType)
+		FailPrint("No check type " + checkType)
 	}
 	return false
 }
@@ -221,7 +221,7 @@ func userInGroup(userName string, groupName string) (bool, error) {
 	detailString := strings.TrimSpace(string(re.Find([]byte(userInfo))))
 	if detailString == "" {
 		// This is likely because an invalid user was tested.
-		failPrint("Group check output empty-- please ensure you entered a valid user.")
+		FailPrint("Group check output empty-- please ensure you entered a valid user.")
 		return false, errors.New("Error parsing net user output for Group")
 	}
 	return strings.Contains(detailString, groupName), nil
@@ -264,7 +264,7 @@ func userDetail(userName string, detailName string, detailValue string) (bool, e
 	case "PasswordNeverExpires":
 		return user.PasswordNeverExpires == lookingFor, nil
 	default:
-		failPrint("detailName (" + detailName + ") passed to userDetail is invalid.")
+		FailPrint("detailName (" + detailName + ") passed to userDetail is invalid.")
 		return false, errors.New("Invalid detailName")
 	}
 	return false, nil
@@ -343,7 +343,7 @@ func securityPolicy(keyName string, keyValue string) (bool, error) {
 			// Fields where the arg should be X or higher (up to 999)
 			intKeyValue, err := strconv.Atoi(keyValue)
 			if err != nil {
-				failPrint(keyValue + " is not a valid integer for SecurityPolicy check")
+				FailPrint(keyValue + " is not a valid integer for SecurityPolicy check")
 				return false, errors.New("Invalid keyValue")
 			}
 			for c := intKeyValue; c <= 999; c++ {
@@ -356,7 +356,7 @@ func securityPolicy(keyName string, keyValue string) (bool, error) {
 			// Fields where arg should be X or lower but NOT 0
 			intKeyValue, err := strconv.Atoi(keyValue)
 			if err != nil {
-				failPrint(keyValue + " is not a valid integer for SecurityPolicy check")
+				FailPrint(keyValue + " is not a valid integer for SecurityPolicy check")
 				return false, errors.New("Invalid keyValue")
 			}
 			for c := intKeyValue; c > 0; c-- {
@@ -399,7 +399,7 @@ func registryKey(keyName string, keyValue string, existCheck bool) (bool, error)
 		if existCheck {
 			return false, nil
 		} else {
-			failPrint("Unknown registry hive: " + registryHiveText)
+			FailPrint("Unknown registry hive: " + registryHiveText)
 			return false, errors.New("Unknown registry hive" + registryHiveText)
 		}
 	}
@@ -410,7 +410,7 @@ func registryKey(keyName string, keyValue string, existCheck bool) (bool, error)
 		if existCheck {
 			return false, nil
 		} else {
-			warnPrint("Registry opening key failed (and that's probably fine): " + err.Error())
+			WarnPrint("Registry opening key failed (and that's probably fine): " + err.Error())
 			return false, err
 		}
 	}
@@ -427,7 +427,7 @@ func registryKey(keyName string, keyValue string, existCheck bool) (bool, error)
 		if existCheck {
 			return false, nil
 		} else {
-			warnPrint("Registry opening key failed (and that's probably fine): " + err.Error())
+			WarnPrint("Registry opening key failed (and that's probably fine): " + err.Error())
 			return false, err
 		}
 	} else {
@@ -447,11 +447,11 @@ func registryKey(keyName string, keyValue string, existCheck bool) (bool, error)
 	case 2: // EXPAND_SZ
 		registryValue, _, err = k.GetStringValue(keyLoc)
 	case 3: // BINARY
-		failPrint("Binary registry format not yet supported.")
+		FailPrint("Binary registry format not yet supported.")
 	case 4: // DWORD
 		registryValue = strconv.FormatUint(uint64(binary.LittleEndian.Uint32(registrySlice)), 10)
 	default:
-		failPrint("Unknown registry type: " + string(valType))
+		FailPrint("Unknown registry type: " + string(valType))
 	}
 
 	// fmt.Printf("Registry value: %s, keyvalue %s\n", registryValue, keyValue)

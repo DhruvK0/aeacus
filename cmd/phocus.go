@@ -1,22 +1,22 @@
-package main
+package cmd
 
 import (
 	"math/rand"
 	"time"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func phocusLoop() {
-	infoPrint("Initializing engine context...")
+	InfoPrint("Initializing engine context...")
 	phocusEnvironment()
 	for {
 		checkTrace()
 		timeCheck()
-		infoPrint("Scoring image...")
-		scoreImage()
+		InfoPrint("Scoring image...")
+		ScoreImage()
 		jitter := time.Duration(rand.Intn(8) + 10)
-		infoPrint("Scored image, sleeping for a bit...")
+		InfoPrint("Scored image, sleeping for a bit...")
 		time.Sleep(jitter * time.Second)
 	}
 }
@@ -25,13 +25,13 @@ func phocusLoop() {
 // run on first start.
 func phocusEnvironment() {
 	// Make sure we're running as admin.
-	runningPermsCheck()
+	RunningPermsCheck()
 	// Fill constants (ex. mc.DirPath) based on OS.
-	fillConstants()
+	FillConstants()
 	// Make sure phocus is not being traced or debugged.
 	checkTrace()
 	// Read in scoring data from the scoring data file.
-	readScoringData()
+	ReadScoringData()
 	// Seed the random function for scoring at random intervals.
 	rand.Seed(time.Now().UnixNano())
 }
@@ -50,7 +50,7 @@ func genPhocusApp() *cli.App {
 				Aliases: []string{"p"},
 				Usage:   "Launch TeamID GUI prompt",
 				Action: func(c *cli.Context) error {
-					launchIDPrompt()
+					LaunchIDPrompt()
 					return nil
 				},
 			},
@@ -59,8 +59,8 @@ func genPhocusApp() *cli.App {
 				Aliases: []string{"v"},
 				Usage:   "Print the current version of phocus",
 				Action: func(c *cli.Context) error {
-					infoPrint("=== phocus ===")
-					infoPrint("version " + aeacusVersion)
+					InfoPrint("=== phocus ===")
+					InfoPrint("version " + AeacusVersion)
 					return nil
 				},
 			},

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"errors"
@@ -9,54 +9,54 @@ import (
 
 // readScoringData is a convenience function around readData and decodeString,
 // which parses the encrypted scoring configuration file.
-func readScoringData() error {
-	decryptedData, err := readData(scoringData)
+func ReadScoringData() error {
+	decryptedData, err := readData(ScoringData)
 	if err != nil {
-		if verboseEnabled || debugEnabled {
-			failPrint("Error reading in scoring data: " + err.Error())
+		if VerboseEnabled || DebugEnabled {
+			FailPrint("Error reading in scoring data: " + err.Error())
 		}
 		return err
 	} else if decryptedData == "" {
-		failPrint("Scoring data is empty! Is the file corrupted?")
+		FailPrint("Scoring data is empty! Is the file corrupted?")
 		return errors.New("Scoring data is empty!")
 	}
 	parseConfig(decryptedData)
 	return nil
 }
 
-// checkConfig parses and checks the validity of the current
+// CheckConfig parses and checks the validity of the current
 // `scoring.conf` file.
-func checkConfig(fileName string) {
+func CheckConfig(fileName string) {
 	fileContent, err := readFile(mc.DirPath + fileName)
 	if err != nil {
-		failPrint("Configuration file (" + fileName + ") not found!")
+		FailPrint("Configuration file (" + fileName + ") not found!")
 		os.Exit(1)
 	}
 	parseConfig(fileContent)
-	if verboseEnabled {
+	if VerboseEnabled {
 		printConfig()
 	}
 }
 
-// fillConstants determines the correct constants, such as DirPath, for the
+// FillConstants determines the correct constants, such as DirPath, for the
 // given runtime and environment.
-func fillConstants() {
+func FillConstants() {
 	if runtime.GOOS == "linux" {
 		mc.DirPath = linuxDir
 	} else if runtime.GOOS == "windows" {
 		mc.DirPath = windowsDir
 	} else {
-		failPrint("This operating system (" + runtime.GOOS + ") is not supported!")
+		FailPrint("This operating system (" + runtime.GOOS + ") is not supported!")
 		os.Exit(1)
 	}
 }
 
-// runningPermsCheck is a convenience function wrapper around
+// RunningPermsCheck is a convenience function wrapper around
 // adminCheck, which prints an error indicating that admin
 // permissions are needed.
-func runningPermsCheck() {
+func RunningPermsCheck() {
 	if !adminCheck() {
-		failPrint("You need to run this binary as root or Administrator!")
+		FailPrint("You need to run this binary as root or Administrator!")
 		os.Exit(1)
 	}
 }
@@ -68,7 +68,7 @@ func timeCheck() {
 	if mc.Config.EndDate != "" {
 		endDate, err := time.Parse("2006/01/02 15:04:05 MST", mc.Config.EndDate)
 		if err != nil {
-			failPrint("Your EndDate value in the configuration is invalid.")
+			FailPrint("Your EndDate value in the configuration is invalid.")
 		} else {
 			if time.Now().After(endDate) {
 				destroyImage()

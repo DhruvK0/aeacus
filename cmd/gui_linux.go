@@ -1,6 +1,6 @@
-package main
+package cmd
 
-func launchIDPrompt() {
+func LaunchIDPrompt() {
 	teamID, err := shellCommandOutput(`
 		#!/bin/bash
 		teamid=$(
@@ -12,15 +12,15 @@ func launchIDPrompt() {
 	if err == nil {
 		writeFile(mc.DirPath+"TeamID.txt", teamID)
 	} else {
-		failPrint("Error saving TeamID!")
+		FailPrint("Error saving TeamID!")
 		sendNotification("Error saving TeamID!")
 	}
 }
 
-func launchConfigGui() {
-	warnPrint("The script doesn't currently have the ability to add multiple check or fail conditions-- you must still do these manually.")
+func LaunchConfigGui() {
+	WarnPrint("The script doesn't currently have the ability to add multiple check or fail conditions-- you must still do these manually.")
 	_, err := shellCommandOutput("bash ./misc/gui_linux.sh")
 	if err == nil {
-		infoPrint("Configuration successfully written to scoring.conf!")
+		InfoPrint("Configuration successfully written to scoring.conf!")
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"os/exec"
@@ -34,7 +34,7 @@ func processCheck(check *check, checkType string, arg1 string, arg2 string, arg3
 		result, err := passwordChanged(arg1, arg2)
 		return err == nil && !result
 	default:
-		failPrint("No check type " + checkType)
+		FailPrint("No check type " + checkType)
 	case "PackageVersion":
 		if check.Message == "" {
 			check.Message = "Package " + arg1 + " is version " + arg2

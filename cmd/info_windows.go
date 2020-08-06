@@ -1,27 +1,27 @@
-package main
+package cmd
 
 import (
 	"fmt"
 	"os"
 )
 
-func getInfo(infoType string) {
+func GetInfo(infoType string) {
 	switch infoType {
 	case "packages":
 		packageList, _ := getPackages()
 		for _, p := range packageList {
-			infoPrint(p)
+			InfoPrint(p)
 		}
 	case "users":
 		userList, _ := getLocalUsers()
 		for _, u := range userList {
-			infoPrint(fmt.Sprint(u))
+			InfoPrint(fmt.Sprint(u))
 		}
 	default:
 		if infoType == "" {
-			failPrint("No info type provided.")
+			FailPrint("No info type provided.")
 		} else {
-			failPrint("No info for \"" + infoType + "\" found.")
+			FailPrint("No info for \"" + infoType + "\" found.")
 		}
 		os.Exit(1)
 	}

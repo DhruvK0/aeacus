@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"crypto/md5"
@@ -26,7 +26,7 @@ func decodeString(fileContent string) (string, error) {
 // sendNotification sends a notification to the end user.
 func sendNotification(messageString string) {
 	if mc.Config.User == "" {
-		failPrint("User not specified in configuration, can't send notification.")
+		FailPrint("User not specified in configuration, can't send notification.")
 	} else {
 		shellCommand(`
 			user="` + mc.Config.User + `"
@@ -44,28 +44,28 @@ func checkTrace() {
 	procStatus, _ := readFile("/proc/self/status")
 	splitProcStatus := strings.Split(grepString("TracerPid", procStatus), "\t")
 	if len(splitProcStatus) > 1 && strings.TrimSpace(splitProcStatus[1]) != "0" {
-		failPrint("Try harder instead of tracing the engine, please.")
+		FailPrint("Try harder instead of tracing the engine, please.")
 		os.Exit(1)
 	}
 }
 
-// createFQs is a quality of life function that creates Forensic Question files
+// CreateFQs is a quality of life function that creates Forensic Question files
 // on the Desktop, pre-populated with a template.
-func createFQs(numFqs int) {
+func CreateFQs(numFqs int) {
 	for i := 1; i <= numFqs; i++ {
 		fileName := "'Forensic Question " + strconv.Itoa(i) + ".txt'"
 		shellCommand("echo 'QUESTION:' > /home/" + mc.Config.User + "/Desktop/" + fileName)
 		shellCommand("echo 'ANSWER:' >> /home/" + mc.Config.User + "/Desktop/" + fileName)
-		if verboseEnabled {
-			infoPrint("Wrote " + fileName + " to Desktop")
+		if VerboseEnabled {
+			InfoPrint("Wrote " + fileName + " to Desktop")
 		}
 	}
 }
 
 // rawCmd returns a exec.Command object for Linux shell commands.
 func rawCmd(commandGiven string) *exec.Cmd {
-	if debugEnabled {
-		infoPrint("rawCmd input: sh -c " + commandGiven)
+	if DebugEnabled {
+		InfoPrint("rawCmd input: sh -c " + commandGiven)
 	}
 	return exec.Command("sh", "-c", commandGiven)
 }
@@ -77,9 +77,9 @@ func shellCommand(commandGiven string) {
 	if err := cmd.Run(); err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
 			if len(commandGiven) > 9 {
-				failPrint("Command \"" + commandGiven[:9] + "...\" errored out (code " + err.Error() + ").")
+				FailPrint("Command \"" + commandGiven[:9] + "...\" errored out (code " + err.Error() + ").")
 			} else {
-				failPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
+				FailPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
 			}
 		}
 	}
@@ -91,9 +91,9 @@ func shellCommandOutput(commandGiven string) (string, error) {
 	out, err := rawCmd(commandGiven).Output()
 	if err != nil {
 		if len(commandGiven) > 12 {
-			failPrint("Command \"" + commandGiven[:12] + "...\" errored out (code " + err.Error() + ").")
+			FailPrint("Command \"" + commandGiven[:12] + "...\" errored out (code " + err.Error() + ").")
 		} else {
-			failPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
+			FailPrint("Command \"" + commandGiven + "\" errored out (code " + err.Error() + ").")
 		}
 		return "", err
 	}
@@ -126,7 +126,7 @@ func adminCheck() bool {
 	currentUser, err := user.Current()
 	uid, _ := strconv.Atoi(currentUser.Uid)
 	if err != nil {
-		failPrint("Error for checking if running as root: " + err.Error())
+		FailPrint("Error for checking if running as root: " + err.Error())
 		return false
 	} else if uid != 0 {
 		return false
@@ -137,9 +137,9 @@ func adminCheck() bool {
 // destroyImage removes the aeacus directory (to stop scoring) and optionally
 // can destroy the entire machine.
 func destroyImage() {
-	failPrint("Destroying the image!")
-	if verboseEnabled {
-		warnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")
+	FailPrint("Destroying the image!")
+	if VerboseEnabled {
+		WarnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")
 	} else {
 		shellCommand("rm -rf " + mc.DirPath)
 		if !mc.Config.NoDestroy {
