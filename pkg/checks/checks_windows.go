@@ -1,4 +1,4 @@
-package cmd
+package checks
 
 import (
 	"encoding/binary"

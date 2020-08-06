@@ -1,6 +1,7 @@
+package checks
+
 // policies_windows.go contains a large mapping onf securityPolicy names or
 // keys to registry locations.
-package cmd
 
 var secpolToKey = map[string]string{
 	"LimitBlankPasswordUse":        "MACHINE\\System\\CurrentControlSet\\Control\\Lsa\\LimitBlankPasswordUse",

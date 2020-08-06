@@ -1,4 +1,4 @@
-package cmd
+package release
 
 func WriteDesktopFiles() {
 	firefoxBinary := `C:\Program Files (x86)\Mozilla Firefox\firefox.exe`

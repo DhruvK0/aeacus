@@ -1,4 +1,4 @@
-package cmd
+package gui
 
 func LaunchIDPrompt() {
 	teamID, err := shellCommandOutput(`

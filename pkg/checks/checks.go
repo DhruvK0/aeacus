@@ -1,8 +1,8 @@
+package checks
+
 // checks.go contains checks that are identical for both Linux and Windows.
 // If a checkType does not match one specified, it is handed off to
 // processCheck for the OS-specific checks.
-
-package cmd
 
 import (
 	"crypto/sha1"

@@ -1,4 +1,4 @@
-package cmd
+package checks
 
 import (
 	"os/exec"

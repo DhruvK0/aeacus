@@ -1,4 +1,4 @@
-package cmd
+package release
 
 // WriteDesktopFiles creates TeamID.txt and its shortcut, as well as links
 // to the ScoringReport, ReadMe, and other needed files.
