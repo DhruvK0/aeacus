@@ -24,7 +24,7 @@ var (
 
 // readFile (Windows) uses ioutil's ReadFile function and passes the returned
 // byte sequence to decodeString.
-func readFile(filename string) (string, error) {
+func ReadFile(filename string) (string, error) {
 	raw, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return "", err
@@ -35,7 +35,7 @@ func readFile(filename string) (string, error) {
 // decodeString (Windows) attempts to determine the file encoding type
 // (typically, UTF-8, UTF-16, or ANSI) and return the appropriately
 // encoded string.
-func decodeString(fileContent string) (string, error) {
+func DecodeString(fileContent string) (string, error) {
 	// If contains ~>40% null bytes, we're gonna assume its Unicode
 	raw := []byte(fileContent)
 	index := bytes.IndexByte(raw, 0)
@@ -67,7 +67,7 @@ func decodeString(fileContent string) (string, error) {
 	return string(decoded), err
 }
 
-func checkTrace() {
+func CheckTrace() {
 	result, _, _ := debuggerCheck.Call()
 	if int(result) != 0 {
 		FailPrint("Reversing is cool, but we would appreciate if you practiced your skills in an environment that was less destructive to other peoples' experiences.")
@@ -77,7 +77,7 @@ func checkTrace() {
 
 // sendNotification (Windows) employes the beeep library to send notifications
 // to the end user.
-func sendNotification(messageString string) {
+func SendNotification(messageString string) {
 	err := beeep.Notify("Aeacus SE", messageString, mc.DirPath+"assets/logo.png")
 	if err != nil {
 		FailPrint("Notification error: " + err.Error())
@@ -89,7 +89,7 @@ func sendNotification(messageString string) {
 // rawCmd uses PowerShell's ScriptBlock feature (along with -NoProfile to
 // speed things up, as well as some other flags) to run commands on the host
 // system and retrieve the return value.
-func rawCmd(commandGiven string) *exec.Cmd {
+func RawCmd(commandGiven string) *exec.Cmd {
 	if DebugEnabled {
 		cmdInput := "powershell.exe -NonInteractive -NoProfile Invoke-Command -ScriptBlock { " + commandGiven + " }"
 		InfoPrint("rawCmd input: " + cmdInput)
@@ -99,7 +99,7 @@ func rawCmd(commandGiven string) *exec.Cmd {
 
 // shellCommand (Windows) executes a given command in a PowerShell environment
 // and prints an error if one occurred.
-func shellCommand(commandGiven string) {
+func ShellCommand(commandGiven string) {
 	cmd := rawCmd(commandGiven)
 	if err := cmd.Run(); err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
@@ -114,7 +114,7 @@ func shellCommand(commandGiven string) {
 
 // shellCommand (Windows) executes a given command in a PowerShell environment
 // and returns the commands output and its error (if one occurred).
-func shellCommandOutput(commandGiven string) (string, error) {
+func ShellCommandOutput(commandGiven string) (string, error) {
 	out, err := rawCmd(commandGiven).Output()
 	if err != nil {
 		if len(commandGiven) > 9 {
@@ -127,7 +127,7 @@ func shellCommandOutput(commandGiven string) (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-func playAudio(wavPath string) {
+func PlayAudio(wavPath string) {
 	commandText := "(New-Object Media.SoundPlayer '" + wavPath + "').PlaySync();"
 	shellCommand(commandText)
 }
@@ -149,12 +149,12 @@ func CreateFQs(numFqs int) {
 //     \\.\PHYSICALDRIVE0
 // and will return true if this succeeds, which means the process is running
 // as Administrator.
-func adminCheck() bool {
+func AdminCheck() bool {
 	_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 	return err == nil
 }
 
-func destroyImage() {
+func DestroyImage() {
 	FailPrint("Destroying the image!")
 	if VerboseEnabled {
 		WarnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")
@@ -174,7 +174,7 @@ func destroyImage() {
 
 // sidToLocalUser takes an SID as a string and returns a string containing
 // the username of the Local User (NTAccount) that it belongs to.
-func sidToLocalUser(sid string) string {
+func SidToLocalUser(sid string) string {
 	cmdText := "$objSID = New-Object System.Security.Principal.SecurityIdentifier('" + sid + "'); $objUser = $objSID.Translate([System.Security.Principal.NTAccount]); Write-Host $objUser.Value"
 	output, _ := shellCommandOutput(cmdText)
 	return strings.TrimSpace(output)
@@ -182,25 +182,25 @@ func sidToLocalUser(sid string) string {
 
 // localUserToSid takes a username as a string and returns a string containing
 // its SID. This is the opposite of sidToLocalUser.
-func localUserToSid(userName string) (string, error) {
+func LocalUserToSid(userName string) (string, error) {
 	return shellCommandOutput("$objUser = New-Object System.Security.Principal.NTAccount('" + userName + "'); $strSID = $objUser.Translate([System.Security.Principal.SecurityIdentifier]); Write-Host $strSID.Value")
 }
 
 // getSecedit returns the string value of the secedit.exe command:
 //     secedit.exe /export
 // which contains security policy options that can't be found in the registry.
-func getSecedit() (string, error) {
+func GetSecedit() (string, error) {
 	return shellCommandOutput("secedit.exe /export /cfg sec.cfg /log NUL; Get-Content sec.cfg; Remove-Item sec.cfg")
 }
 
 // getNetUserInfo returns the string output from the command:
 //     net user {username}
 // in order to get user properties and details.
-func getNetUserInfo(userName string) (string, error) {
+func GetNetUserInfo(userName string) (string, error) {
 	return shellCommandOutput("net user " + userName)
 }
 
-func getPackages() ([]string, error) {
+func GetPackages() ([]string, error) {
 	softwareList := []string{}
 	sw, err := wapi.InstalledSoftwareList()
 	if err != nil {
@@ -213,7 +213,7 @@ func getPackages() ([]string, error) {
 	return softwareList, nil
 }
 
-func getLocalUsers() ([]shared.LocalUser, error) {
+func GetLocalUsers() ([]shared.LocalUser, error) {
 	ul, err := wapi.ListLocalUsers()
 	if err != nil {
 		FailPrint("Couldn't get local users: " + err.Error())
@@ -221,7 +221,7 @@ func getLocalUsers() ([]shared.LocalUser, error) {
 	return ul, err
 }
 
-func getLocalUser(userName string) (shared.LocalUser, error) {
+func GetLocalUser(userName string) (shared.LocalUser, error) {
 	userList, err := getLocalUsers()
 	if err != nil {
 		return shared.LocalUser{}, err

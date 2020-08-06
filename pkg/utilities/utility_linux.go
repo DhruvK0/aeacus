@@ -12,19 +12,19 @@ import (
 )
 
 // readFile (Linux) wraps ioutil's ReadFile function.
-func readFile(fileName string) (string, error) {
+func ReadFile(fileName string) (string, error) {
 	fileContent, err := ioutil.ReadFile(fileName)
 	return string(fileContent), err
 }
 
 // decodeString (linux) strictly does nothing, however it's here
 // for compatibility with Windows ANSI/UNICODE/etc.
-func decodeString(fileContent string) (string, error) {
+func DecodeString(fileContent string) (string, error) {
 	return fileContent, nil
 }
 
 // sendNotification sends a notification to the end user.
-func sendNotification(messageString string) {
+func SendNotification(messageString string) {
 	if mc.Config.User == "" {
 		FailPrint("User not specified in configuration, can't send notification.")
 	} else {
@@ -40,7 +40,7 @@ func sendNotification(messageString string) {
 	}
 }
 
-func checkTrace() {
+func CheckTrace() {
 	procStatus, _ := readFile("/proc/self/status")
 	splitProcStatus := strings.Split(grepString("TracerPid", procStatus), "\t")
 	if len(splitProcStatus) > 1 && strings.TrimSpace(splitProcStatus[1]) != "0" {
@@ -63,7 +63,7 @@ func CreateFQs(numFqs int) {
 }
 
 // rawCmd returns a exec.Command object for Linux shell commands.
-func rawCmd(commandGiven string) *exec.Cmd {
+func RawCmd(commandGiven string) *exec.Cmd {
 	if DebugEnabled {
 		InfoPrint("rawCmd input: sh -c " + commandGiven)
 	}
@@ -72,7 +72,7 @@ func rawCmd(commandGiven string) *exec.Cmd {
 
 // shellCommand executes a given command in a sh environment, and prints an
 // error if one occurred.
-func shellCommand(commandGiven string) {
+func ShellCommand(commandGiven string) {
 	cmd := rawCmd(commandGiven)
 	if err := cmd.Run(); err != nil {
 		if _, ok := err.(*exec.ExitError); ok {
@@ -87,7 +87,7 @@ func shellCommand(commandGiven string) {
 
 // shellCommandOutput executes a given command in a sh environment, and
 // returns its output and error (if one occurred).
-func shellCommandOutput(commandGiven string) (string, error) {
+func ShellCommandOutput(commandGiven string) (string, error) {
 	out, err := rawCmd(commandGiven).Output()
 	if err != nil {
 		if len(commandGiven) > 12 {
@@ -101,13 +101,13 @@ func shellCommandOutput(commandGiven string) (string, error) {
 }
 
 // playAudio plays a .wav file with the given path.
-func playAudio(wavPath string) {
+func PlayAudio(wavPath string) {
 	commandText := "aplay " + wavPath
 	shellCommand(commandText)
 }
 
 // hashFileMD5 generates the MD5 Hash of a file with the given path.
-func hashFileMD5(filePath string) (string, error) {
+func HashFileMD5(filePath string) (string, error) {
 	var returnMD5String string
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -122,7 +122,7 @@ func hashFileMD5(filePath string) (string, error) {
 	return hexEncode(string(hashInBytes)), err
 }
 
-func adminCheck() bool {
+func AdminCheck() bool {
 	currentUser, err := user.Current()
 	uid, _ := strconv.Atoi(currentUser.Uid)
 	if err != nil {
@@ -136,7 +136,7 @@ func adminCheck() bool {
 
 // destroyImage removes the aeacus directory (to stop scoring) and optionally
 // can destroy the entire machine.
-func destroyImage() {
+func DestroyImage() {
 	FailPrint("Destroying the image!")
 	if VerboseEnabled {
 		WarnPrint("Since you're running this in verbose mode, I assume you're a developer who messed something up. You've been spared from image deletion but please be careful.")

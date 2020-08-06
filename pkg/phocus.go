@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func phocusLoop() {
+func PhocusLoop() {
 	InfoPrint("Initializing engine context...")
 	phocusEnvironment()
 	for {
@@ -23,7 +23,7 @@ func phocusLoop() {
 
 // phocusEnvironment runs functions needed in order for phocus to successfully
 // run on first start.
-func phocusEnvironment() {
+func PhocusEnvironment() {
 	// Make sure we're running as admin.
 	RunningPermsCheck()
 	// Fill constants (ex. mc.DirPath) based on OS.
@@ -36,7 +36,7 @@ func phocusEnvironment() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func genPhocusApp() *cli.App {
+func GenPhocusApp() *cli.App {
 	return &cli.App{
 		Name:  "phocus",
 		Usage: "score vulnerabilities",
