@@ -8,7 +8,7 @@ import (
 
 func ScoreImage() {
 	// Ensure checks aren't blank, and grab TeamID.
-	checkConfigData()
+	CheckConfigData()
 
 	// If local is enabled, we want to:
 	//    1. Score checks
@@ -53,14 +53,14 @@ func ScoreImage() {
 	}
 
 	// Check if points increased/decreased
-	prevPoints, err := readFile(mc.DirPath + "previous.txt")
+	prevPoints, err := ReadFile(mc.DirPath + "previous.txt")
 	if err == nil {
 		prevScore, _ := strconv.Atoi(prevPoints)
 		if prevScore < mc.Image.Score {
-			sendNotification("You gained points!")
+			SendNotification("You gained points!")
 			playAudio(mc.DirPath + "assets/gain.wav")
 		} else if prevScore > mc.Image.Score {
-			sendNotification("You lost points!")
+			SendNotification("You lost points!")
 			playAudio(mc.DirPath + "assets/alarm.wav")
 		}
 	} else {

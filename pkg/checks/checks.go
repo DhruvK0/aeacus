@@ -179,7 +179,7 @@ func pathExists(pathName string) (bool, error) {
 
 // fileContains searches for a given searchString in the provided fileName.
 func fileContains(fileName string, searchString string) (bool, error) {
-	fileContent, err := readFile(fileName)
+	fileContent, err := ReadFile(fileName)
 	return strings.Contains(strings.TrimSpace(fileContent), searchString), err
 }
 
@@ -189,7 +189,7 @@ func fileContains(fileName string, searchString string) (bool, error) {
 // Newlines in regex may not work as expected, especially on Windows. It's
 // best to not use these (ex. ^ and $).
 func fileContainsRegex(fileName string, expressionString string) (bool, error) {
-	fileContent, err := readFile(fileName)
+	fileContent, err := ReadFile(fileName)
 	if err != nil {
 		return false, err
 	}
@@ -235,7 +235,7 @@ func dirContainsRegex(dirName string, expressionString string) (bool, error) {
 // fileEquals calculates the SHA1 sum of a file and compares it
 // with the hash provided in the check
 func fileEquals(fileName string, fileHash string) (bool, error) {
-	fileContent, err := readFile(fileName)
+	fileContent, err := ReadFile(fileName)
 	if err != nil {
 		return false, err
 	}

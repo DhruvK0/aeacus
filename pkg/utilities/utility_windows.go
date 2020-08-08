@@ -22,7 +22,7 @@ var (
 	debuggerCheck = kernel32DLL.NewProc("IsDebuggerPresent")
 )
 
-// readFile (Windows) uses ioutil's ReadFile function and passes the returned
+// ReadFile (Windows) uses ioutil's ReadFile function and passes the returned
 // byte sequence to decodeString.
 func ReadFile(filename string) (string, error) {
 	raw, err := ioutil.ReadFile(filename)
@@ -75,7 +75,7 @@ func CheckTrace() {
 	}
 }
 
-// sendNotification (Windows) employes the beeep library to send notifications
+// SendNotification (Windows) employes the beeep library to send notifications
 // to the end user.
 func SendNotification(messageString string) {
 	err := beeep.Notify("Aeacus SE", messageString, mc.DirPath+"assets/logo.png")

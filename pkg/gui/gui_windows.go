@@ -1,5 +1,10 @@
 package gui
 
+import (
+	"aeacus/pkg/misc"
+	"aeacus/pkg/utilities"
+)
+
 func LaunchIDPrompt() {
 	powerShellPrompt := `
         Add-Type -AssemblyName System.Windows.Forms
@@ -43,9 +48,9 @@ func LaunchIDPrompt() {
 
         [void]$Form.ShowDialog()
     `
-	shellCommand(powerShellPrompt)
+	utilities.ShellCommand(powerShellPrompt)
 }
 
 func LaunchConfigGui() {
-	WarnPrint("This feature is not supported yet on Windows.")
+	misc.WarnPrint("This feature is not supported yet on Windows.")
 }

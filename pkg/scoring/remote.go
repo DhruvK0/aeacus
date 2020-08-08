@@ -19,17 +19,17 @@ import (
 var delimiter = "|-S#-|"
 
 func readTeamID() {
-	fileContent, err := readFile(mc.DirPath + "TeamID.txt")
+	fileContent, err := ReadFile(mc.DirPath + "TeamID.txt")
 	fileContent = strings.TrimSpace(fileContent)
 	if err != nil {
 		FailPrint("TeamID.txt does not exist!")
-		sendNotification("TeamID.txt does not exist!")
+		SendNotification("TeamID.txt does not exist!")
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Your TeamID files does not exist! Failed to upload scores."
 		mc.Connection = false
 	} else if fileContent == "" {
 		FailPrint("TeamID.txt is empty!")
-		sendNotification("TeamID.txt is empty!")
+		SendNotification("TeamID.txt is empty!")
 		mc.Conn.OverallStatus = "red"
 		mc.Conn.OverallStatus = "Your TeamID is empty! Failed to upload scores."
 		mc.Connection = false
@@ -111,7 +111,7 @@ func reportScore() error {
 		mc.Conn.OverallStatus = "Failed to upload score! Please ensure that your Team ID is correct."
 		mc.Connection = false
 		FailPrint("Failed to upload score! Is your TeamID wrong?")
-		sendNotification("Failed to upload score! Is your Team ID correct?")
+		SendNotification("Failed to upload score! Is your Team ID correct?")
 		return errors.New("Non-200 response from remote scoring endpoint")
 	}
 	return nil
@@ -170,13 +170,13 @@ func checkServer() {
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Failure! Can't access remote scoring server."
 		FailPrint("Can't access remote scoring server!")
-		sendNotification("Score upload failure! Unable to access remote server.")
+		SendNotification("Score upload failure! Unable to access remote server.")
 		mc.Connection = false
 	} else if mc.Conn.ServerStatus == "ERROR" {
 		mc.Conn.OverallColor = "red"
 		mc.Conn.OverallStatus = "Score upload failure. Can't send scores to remote server."
 		FailPrint("Remote server returned an error for its status!")
-		sendNotification("Score upload failure! Remote server returned an error.")
+		SendNotification("Score upload failure! Remote server returned an error.")
 		mc.Connection = false
 	} else {
 		mc.Conn.OverallColor = "green"

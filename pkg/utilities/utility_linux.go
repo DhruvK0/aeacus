@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"aeacus/pkg/misc"
 	"crypto/md5"
 	"io"
 	"io/ioutil"
@@ -11,7 +12,7 @@ import (
 	"strings"
 )
 
-// readFile (Linux) wraps ioutil's ReadFile function.
+// ReadFile (Linux) wraps ioutil's ReadFile function.
 func ReadFile(fileName string) (string, error) {
 	fileContent, err := ioutil.ReadFile(fileName)
 	return string(fileContent), err
@@ -23,10 +24,10 @@ func DecodeString(fileContent string) (string, error) {
 	return fileContent, nil
 }
 
-// sendNotification sends a notification to the end user.
+// SendNotification sends a notification to the end user.
 func SendNotification(messageString string) {
 	if mc.Config.User == "" {
-		FailPrint("User not specified in configuration, can't send notification.")
+		misc.FailPrint("User not specified in configuration, can't send notification.")
 	} else {
 		shellCommand(`
 			user="` + mc.Config.User + `"
@@ -41,7 +42,7 @@ func SendNotification(messageString string) {
 }
 
 func CheckTrace() {
-	procStatus, _ := readFile("/proc/self/status")
+	procStatus, _ := ReadFile("/proc/self/status")
 	splitProcStatus := strings.Split(grepString("TracerPid", procStatus), "\t")
 	if len(splitProcStatus) > 1 && strings.TrimSpace(splitProcStatus[1]) != "0" {
 		FailPrint("Try harder instead of tracing the engine, please.")

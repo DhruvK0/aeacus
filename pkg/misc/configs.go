@@ -36,7 +36,7 @@ func WriteConfig(sourceFile, destFile string) {
 		InfoPrint("Reading configuration from " + mc.DirPath + sourceFile + "...")
 	}
 
-	configFile, err := readFile(mc.DirPath + sourceFile)
+	configFile, err := ReadFile(mc.DirPath + sourceFile)
 	if err != nil {
 		FailPrint("Can't open scoring configuration file (" + sourceFile + "): " + err.Error())
 		os.Exit(1)
@@ -58,7 +58,7 @@ func readData(fileName string) (string, error) {
 		InfoPrint("Decrypting data from " + mc.DirPath + fileName + "...")
 	}
 	// Read in the encrypted configuration file.
-	dataFile, err := readFile(mc.DirPath + ScoringData)
+	dataFile, err := ReadFile(mc.DirPath + ScoringData)
 	if err != nil {
 		return "", err
 	} else if dataFile == "" {
